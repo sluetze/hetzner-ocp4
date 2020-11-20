@@ -1,12 +1,12 @@
 ---
 # Install packages
 # Configure
-# 
+#
 # Handlers
-# 
+#
 
 - name: Ensure NFS utilities are installed.
-  package: 
+  package:
     name: nfs-utils
     state: present
 
@@ -25,7 +25,7 @@
   when: ansible_os_family == "RedHat" and ansible_distribution_major_version != '7'
 
 - name: Ensure nfs is running.
-  service: 
+  service:
     name: "{{ nfs_server }}"
     state: started
     enabled: yes
@@ -34,14 +34,14 @@
   blockinfile:
     path: /etc/exports
     backup: yes
-    create: yes 
+    create: yes
     marker: "# {mark} OpenShift cluster - {{ cluster_name }}"
     owner: root
     group: root
     mode: 0644
     block: |
-      {{ storage_nfs_path_prefix }}/{{ cluster_name }}-pv-infra-registry {{ vn_subnet }}/24(rw,sync,no_root_squash)
-      {{ storage_nfs_path_prefix }}/{{ cluster_name }}-pv-user-pvs {{ vn_subnet }}/24(rw,sync,no_root_squash)
+      {{ storage_nfs_path_prefix }}/{{ cluster_name }}-pv-infra-registry {{ vn_subnet_2 }}/24(rw,sync,no_root_squash)
+      {{ storage_nfs_path_prefix }}/{{ cluster_name }}-pv-user-pvs {{ vn_subnet_2 }}/24(rw,sync,no_root_squash)
   tags: exports
 
 - name: Adjust directory permissions
@@ -75,8 +75,8 @@
         capacity:
           storage: 100Gi
         nfs:
-          path: "{{ storage_nfs_path_prefix }}/{{ cluster_name }}-pv-infra-registry" 
-          server: "{{ vn_subnet.split('.')[:3] | join('.')}}.1"
+          path: "{{ storage_nfs_path_prefix }}/{{ cluster_name }}-pv-infra-registry"
+          server: "{{ vn_subnet_2.split('.')[:3] | join('.')}}.1"
         persistentVolumeReclaimPolicy: Recycle
 
 - name: Create registry-storage pvc
@@ -95,7 +95,7 @@
         resources:
           requests:
             storage: 100Gi
-      
+
 - name: Add pvc registry-storage to image registry
   command: |
     oc patch configs.imageregistry.operator.openshift.io cluster --type='json' -p='[{"op": "remove", "path": "/spec/storage" },{"op": "add", "path": "/spec/storage", "value": {"pvc":{"claim": "registry-storage"}}}]' --config {{ openshift_install_dir }}/auth/kubeconfig
@@ -103,8 +103,8 @@
   retries: 60
   delay: 30
   until: registry_status.rc == 0
-  tags: 
-   - storage  
+  tags:
+   - storage
 
 - name: Adjust directory permissions
   file:
@@ -115,7 +115,7 @@
   - "infra-registry"
   - "user-pvs"
 
-- name: Create Namespace 
+- name: Create Namespace
   k8s:
     state: present
     kubeconfig: "{{ openshift_install_dir }}/auth/kubeconfig"
@@ -247,13 +247,13 @@
                   - name: PROVISIONER_NAME
                     value: redhat-emea-ssa-team/hetzner-ocp4
                   - name: NFS_SERVER
-                    value: "{{ vn_subnet.split('.')[:3] | join('.')}}.1"
+                    value: "{{ vn_subnet_2.split('.')[:3] | join('.')}}.1"
                   - name: NFS_PATH
                     value: "{{ storage_nfs_path_prefix }}/{{ cluster_name }}-pv-user-pvs"
             volumes:
               - name: nfs-client-root
                 nfs:
-                  server: "{{ vn_subnet.split('.')[:3] | join('.')}}.1"
+                  server: "{{ vn_subnet_2.split('.')[:3] | join('.')}}.1"
                   path: "{{ storage_nfs_path_prefix }}/{{ cluster_name }}-pv-user-pvs"
 
 - name: Storage Class

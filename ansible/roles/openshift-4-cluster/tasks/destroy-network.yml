@@ -24,12 +24,12 @@
   when: dns_provider == 'none'
 
 - name: Destroy OpenShift 4 load balancer
-  import_role: 
+  import_role:
     name: openshift-4-loadbalancer
     tasks_from: destroy.yml
   vars:
     lb_name: "openshift-4-loadbalancer-{{ cluster_name }}"
-  tags: 
+  tags:
     lb
 
 - name: Destroy Network {{ vn_name }}
@@ -42,6 +42,17 @@
   virt_net:
     command: undefine
     name: "{{ vn_name }}"
+
+- name: Destroy Network {{ vn_name }}_2
+  virt_net:
+    command: destroy
+    name: "{{ vn_name }}_2"
+  ignore_errors: yes
+
+- name: Undefine Network {{ vn_name }}_2
+  virt_net:
+    command: undefine
+    name: "{{ vn_name }}_2"
 
 - name: Check firewalld source
   shell: "firewall-cmd --zone=internal --list-sources | grep -q '{{ vn_subnet }}/24'"

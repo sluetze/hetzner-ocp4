@@ -1,0 +1,31 @@
+<network>
+    <name>{{ cluster_name }}_2</name>
+    <domain name="{{ vn_internal_domain_2 }}"/>
+    <dns>
+        <host ip='{{ vn_subnet_2.split('.')[:3] | join('.')}}.2'>
+            <hostname>bootstrap.{{ vn_internal_domain_2 }}</hostname>
+        </host>
+        <host ip='{{ vn_subnet_2.split('.')[:3] | join('.')}}.1'>
+            <hostname>host.{{ vn_internal_domain_2 }}</hostname>
+        </host>
+        {% for id in range(0, vn_master_count | int) -%}
+        <host ip='{{ vn_subnet_2.split('.')[:3] | join('.')}}.{{ 10 + id|int }}'>
+            <hostname>master-{{ id }}.{{ vn_internal_domain_2 }}</hostname>
+        </host>
+        {% endfor %}
+    </dns>
+
+    <ip address='{{ vn_subnet_2.split('.')[:3] | join('.')}}.1' netmask='255.255.255.0'>
+        <dhcp>
+            <range start='{{ vn_subnet_2.split('.')[:3] | join('.')}}.10' end='{{ vn_subnet_2.split('.')[:3] | join('.')}}.250'/>
+            <host mac='52:54:01:{{ '%02x' % vn_subnet_2.split('.')[1]|int }}:{{ '%02x' % vn_subnet_2.split('.')[2]|int }}:{{ '%02x' % 2 }}' name='bootstrap.{{ vn_internal_domain_2 }}' ip='{{ vn_subnet_2.split('.')[:3] | join('.')}}.2'/>
+            {% for id in range(0, vn_master_count | int) -%}
+            <host mac='52:54:01:{{ '%02x' % vn_subnet_2.split('.')[1]|int }}:{{ '%02x' % vn_subnet_2.split('.')[2]|int }}:{{ '%02x' % (10 + id) }}' name='master-{{ id }}.{{ vn_internal_domain_2 }}' ip='{{ vn_subnet_2.split('.')[:3] | join('.')}}.{{ 10 + id }}'/>
+            {% endfor -%}
+            {% for id in range(0, vn_compute_count | int) -%}
+            <host mac='52:54:01:{{ '%02x' % vn_subnet_2.split('.')[1]|int }}:{{ '%02x' % vn_subnet_2.split('.')[2]|int }}:{{ '%02x' % (10 + vn_master_count|int + id) }}' name='compute-{{ id }}.{{ vn_internal_domain_2 }}' ip='{{ vn_subnet_2.split('.')[:3] | join('.')}}.{{ 10 + vn_master_count|int + id }}'/>
+            {% endfor %}
+
+        </dhcp>
+    </ip>
+</network>
