@@ -2,7 +2,7 @@
 
 ## Add Windows node
 
-Download 
+Download
 * Latest VirtIO driver: https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-0.1.185-2/virtio-win-0.1.185.iso
 * Download Windows 2019 Server ISO:
 
@@ -107,5 +107,23 @@ winrm set winrm/config/service '@{AllowUnencrypted="true"}'
 
 
 ## Join Windows to OCP Cluster
+
+
+
+
+# Notes & resources
+
+Windows Server 2019 => LTSC
+Windows Server 1909 => SAC
+
+
+* [How to Check your PowerShell Version](https://adamtheautomator.com/powershell-version/)
+* [Windows Server-Wartungskanäle: LTSC und SAC](https://docs.microsoft.com/de-de/windows-server/get-started-19/servicing-channels-19)
+* https://docs.microsoft.com/de-de/virtualization/windowscontainers/manage-docker/configure-docker-daemon#clean-up-docker-data-and-system-components
+* [KMS-Clientsetupschlüssel](https://docs.microsoft.com/de-de/windows-server/get-started/kmsclientkeys)
+* https://docs.microsoft.com/de-de/windows-server/networking/sdn/technologies/hyper-v-network-virtualization/whats-new-hyperv-network-virtualization-windows-server
+* https://www.software-express.de/info/windows-server2019-ltsc-sac/
+* https://www.microsoft.com/de-de/evalcenter/evaluate-windows-server-2019
+
 
 
