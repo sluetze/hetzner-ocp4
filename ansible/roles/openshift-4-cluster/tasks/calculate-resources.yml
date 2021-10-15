@@ -1,0 +1,36 @@
+---
+
+- name: Check master_memory_unit and compute_memory_unit
+  fail:
+    msg: "Currently we support on MiB for master_memory_unit and compute_memory_unit"
+  when:
+    - master_memory_unit != "MiB"
+    - compute_memory_unit != "MiB"
+
+# - name: Cal
+#   set_facts:
+
+# - debug:
+#     msg: "vCPUs: {{ ansible_processor_vcpus }} // memory: {{ ansible_memtotal_mb }}"
+
+
+- name: Calculate
+  debug:
+    msg:
+      - "Sum of controle plane resources:"
+      - "     vCPU: {{ master_count|int * master_vcpu|int }}"
+      - "   Memory: {{ master_count|int * master_memory_size|int }} {{ master_memory_unit }}"
+      - ""
+      - "Sum of compute resources:"
+      - "     vCPU: {{ compute_count|int * compute_vcpu|int }}"
+      - "   Memory: {{ compute_count|int * compute_memory_size|int }} {{ compute_memory_unit }}"
+      - ""
+      - "Sum of ALL resources:"
+      - "     vCPU: {{ compute_count|int * compute_vcpu|int + master_count|int * master_vcpu|int  }}"
+      - "   Memory: {{ compute_count|int * compute_memory_size|int + master_count|int * master_memory_size|int}} {{ compute_memory_unit }}"
+      - ""
+      - "Resources left (available: vCPU: {{ ansible_processor_vcpus }} Memory: {{ ansible_memtotal_mb }}):"
+      - "     vCPU: {{ ansible_processor_vcpus - ( compute_count|int * compute_vcpu|int + master_count|int * master_vcpu|int )   }}"
+      - "   Memory: {{ ansible_memtotal_mb - ( compute_count|int * compute_memory_size|int + master_count|int * master_memory_size|int )}} {{ compute_memory_unit }}"
+
+
