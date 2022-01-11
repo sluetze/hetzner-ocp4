@@ -1,4 +1,11 @@
 ---
+
+- name: Enable EPEL release
+  yum:
+    name:
+      - epel-release.noarch
+    state: present
+
 - name: Installing KVM Packages
   yum:
     name:
