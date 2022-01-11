@@ -16,7 +16,7 @@
 - name: Upgrade all packages
   yum:
     name: '*'
-    state: latest
+    state: present
 
 - name: Allow NFS traffic from VM's to Host
   firewalld:
